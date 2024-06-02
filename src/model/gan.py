@@ -85,7 +85,7 @@ class GAN(nn.Module):
   def update_D_prob(self, W):
     pass
     
-  # Contain the training loop logic, alternating between updating the generator and discriminator based on certain probabilities
+  # This forward method orchestrates (organizes) the training process of the GAN model, encapsulating the training loop, loss calculations, and integration of the discriminator and generator.
   def forward(self, x_audio, y_pose, **kwargs):
     internal_losses = []
 
@@ -95,6 +95,7 @@ class GAN(nn.Module):
     else:
       confidence = 1
 
+    # Estimate weights for loss function
     W, outputs = self.estimate_weights(x_audio, y_pose, **kwargs)
     W_loss = self.estimate_weights_loss(W)
     if self.update_D_prob_flag:
@@ -120,6 +121,7 @@ class GAN(nn.Module):
         self.fake_flag = True
         #if torch.rand(1).item() < 0.5:
         if True:
+          # Compute discriminator losses
           fake_pose_score, _ = self.D(fake_pose_v.detach())
           fake_D_loss = self.lambda_D * self.get_gan_loss(fake_pose_score, self.get_fake_gt(fake_pose_score), torch.ones_like(1/W_loss))
           self.fake_flag = True
@@ -145,6 +147,7 @@ class GAN(nn.Module):
         else:
           fake_pose_score, _ = self.D(fake_pose_v)
 
+        # Compute generator losses
         G_gan_loss = self.lambda_gan * self.get_gan_loss(fake_pose_score, self.get_real_gt(fake_pose_score), 1/W_loss)
           
         pose_loss = self.get_loss(fake_pose*confidence, y_pose*confidence, 1/W_loss)
@@ -154,6 +157,7 @@ class GAN(nn.Module):
         internal_losses += partial_i_loss
         self.G_flag = True
     else:
+      # In evaluation mode, simply generate poses
       fake_pose, partial_i_loss, *args = self.G(x_audio, y_pose, **kwargs)
       args = args[0] if len(args)>0 else {}
       pose_loss = self.get_loss(fake_pose*confidence, y_pose*confidence, torch.ones_like(W_loss))
