@@ -1,5 +1,3 @@
-# Maybe need to rename this file to gan.py?
-
 import os
 import sys
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
