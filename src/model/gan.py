@@ -1,3 +1,5 @@
+# gan.py handles the higher-level training mechanics and integration, while speech2gesture.py specifies the detailed structure of the neural networks involved
+
 import os
 import sys
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
@@ -83,6 +85,7 @@ class GAN(nn.Module):
   def update_D_prob(self, W):
     pass
     
+  # Contain the training loop logic, alternating between updating the generator and discriminator based on certain probabilities
   def forward(self, x_audio, y_pose, **kwargs):
     internal_losses = []
 

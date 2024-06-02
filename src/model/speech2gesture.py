@@ -1,3 +1,5 @@
+# gan.py handles the higher-level training mechanics and integration, while speech2gesture.py specifies the detailed structure of the neural networks (G and D) involved
+
 import os
 import sys
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
@@ -37,7 +39,7 @@ class Speech2Gesture_G(nn.Module):
                                   for i in range(4)]))
     self.logits = nn.Conv1d(in_channels, out_feats, kernel_size=1, stride=1)
 
-  # How data should pass through these layers
+  # Define how the input audio features are processed through the network to produce the output gesture feature
   def forward(self, x, y, time_steps=None, **kwargs):
     if x.dim() == 3:
       x = x.unsqueeze(dim=1)
@@ -64,7 +66,6 @@ class Speech2Gesture_D(nn.Module):
   def __init__(self, in_channels=104, out_channels=64,  n_downsampling=2, p=0, groups=1, **kwargs):
     super(Speech2Gesture_D, self).__init__()
 
-    # Layers
     self.conv1 = nn.Sequential(torch.nn.Conv1d(in_channels*groups, out_channels*groups, 4, 2, padding=1, groups=groups),
                                torch.nn.LeakyReLU(negative_slope=0.2))
     self.conv2 = nn.ModuleList([])
@@ -81,7 +82,7 @@ class Speech2Gesture_D(nn.Module):
     out_shape = 1 if 'out_shape' not in kwargs else kwargs['out_shape']
     self.logits = nn.Conv1d(out_channels*ch_mul_new*groups, out_shape*groups, kernel_size=4, stride=1, groups=groups)
 
-  # How data should pass through these layers
+  # Defines how the input pose features are processed through the network to produce the discriminator scores
   def forward(self, x):
     x = x.transpose(-1, -2)
     x = self.conv1(x)
