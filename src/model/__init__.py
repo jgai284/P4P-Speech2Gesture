@@ -13,7 +13,7 @@ from .speech2gesture import *
 from .gan import *
 
 ## Trainers - BaseTrainer, Trainer, GANTrainer
-# from .trainer import *
+from .trainer import *
 
 '''
 speech2gesture baselines
