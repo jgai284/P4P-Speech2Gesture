@@ -13,7 +13,7 @@ from nltk.corpus import stopwords
 
 from skeleton import *
 from audio import *
-from text import *
+# from text import *
 from common import *
 from argsUtils import *
 import bisect
@@ -160,10 +160,10 @@ class Data(Modality):
 
     ## if not repeat_text, do not repeat the word vectors to match the fs
     #if True: #not self.repeat_text:
-    if self.text_in_modalities:
-      ## always keep text/token_duration at the end to comply with the collate_fn_pad
-      pad_keys = ['text/w2v', 'text/bert', 'text/filler', 'text/tokens', 'text/token_duration']
-      self.dataLoader_kwargs.update({'collate_fn':partial(collate_fn_pad, pad_key=pad_keys, dim=0)})
+    # if self.text_in_modalities:
+    #   ## always keep text/token_duration at the end to comply with the collate_fn_pad
+    #   pad_keys = ['text/w2v', 'text/bert', 'text/filler', 'text/tokens', 'text/token_duration']
+    #   self.dataLoader_kwargs.update({'collate_fn':partial(collate_fn_pad, pad_key=pad_keys, dim=0)})
       
     self.update_dataloaders(time, window_hop)
       
@@ -179,7 +179,7 @@ class Data(Modality):
     mod_map_dict = {
       'pose': Skeleton2D,
       'audio': Audio,
-      'text': Text
+      # 'text': Text
     }
     return mod_map_dict[mod](path2data=self.path2data, speaker=self.speaker)
 

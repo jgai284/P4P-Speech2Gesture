@@ -6,4 +6,4 @@ from .dataUtils import *
 from .common import *
 from .skeleton import *
 from .audio import *
-from .text import *
+# from .text import *
