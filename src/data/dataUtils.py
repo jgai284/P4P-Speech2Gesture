@@ -463,6 +463,7 @@ class Data(Modality):
       shape.update({modality:[length, feats_shape[-1]]})
     return shape
   
+# Helper class
 class MiniData(Dataset, HDF5):
   def __init__(self, path2h5, modalities, fs_new, time, modality_classes, window_hop, style=0, repeat_text=1, text_in_modalities=False, filler=0, **kwargs):
     super(MiniData, self).__init__()
@@ -615,6 +616,7 @@ class MiniData(Dataset, HDF5):
     for h5 in files:
       h5.close()
 
+# Helper class
 class DataSample(Data):
   def __init__(self, path2data, speaker,
                modalities = ['pose/data', 'audio/log_mel_512'],
@@ -654,6 +656,7 @@ class DataSample(Data):
     return [MiniData(self.getPath2file(interval_id), style=self.getStyle(interval_id), **self.minidataKwargs)
                                    for interval_id in tqdm(new_intervals)]
   
+# Helper class
 class AlternateClassSampler(Sampler):
   def __init__(self, class_count, num_samples, replacement=True):
     self.num_samples_per_class = num_samples//len(class_count)
@@ -672,6 +675,7 @@ class AlternateClassSampler(Sampler):
   def __len__(self):
     return self.num_samples
 
+# Helper class
 class BalanceClassSampler(Sampler):
   def __init__(self, classes, num_samples, replacement=True):
     self.classes = classes
@@ -692,6 +696,7 @@ class BalanceClassSampler(Sampler):
   def __len__(self):
     return self.num_samples
 
+# Helper class
 class ConcatDatasetIndex(ConcatDataset):
   def __init__(self, datasets):
     super().__init__(datasets)
