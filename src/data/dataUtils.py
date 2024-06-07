@@ -13,7 +13,7 @@ from nltk.corpus import stopwords
 
 from skeleton import *
 from audio import *
-# from text import *
+from text import *
 from common import *
 from argsUtils import *
 import bisect
@@ -183,7 +183,7 @@ class Data(Modality):
     mod_map_dict = {
       'pose': Skeleton2D,
       'audio': Audio,
-      # 'text': Text
+      'text': Text
     }
     return mod_map_dict[mod](path2data=self.path2data, speaker=self.speaker)
 
