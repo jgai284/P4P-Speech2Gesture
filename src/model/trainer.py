@@ -159,7 +159,8 @@ class TrainerBase():
     self.schedulers = self.get_scheduler()
 
     ## ZNorm
-    self.pre = self.get_pre()
+    # +++++++++++++++++++++++++++++++ Temporarily commented out +++++++++++++++++++++++++++++++
+    # self.pre = self.get_pre()
 
     ## Remove Joints / Reinsert Joints from data
     self.transform = self.get_transforms()
@@ -1040,16 +1041,31 @@ class TrainerLate(Trainer):
 TrainerJointLate = TrainerLate
 TrainerJoint = Trainer
 
+# Speech2Gesture training function
 class TrainerGAN(TrainerBase):
   def __init__(self, args, args_subset, args_dict_update):
     super(TrainerGAN, self).__init__(args, args_subset, args_dict_update)
     self.running_loss = [0]
     self.running_count = [1e-10]
 
+    # Check CUDA availability
+    # if torch.cuda.is_available():
+    #   if args.cuda >= 0 and args.cuda < torch.cuda.device_count():
+    #       print("CUDA available")
+    #   else:
+    #       raise ValueError("Invalid CUDA device index")
+    # else:
+    #   if args.cuda >= 0:
+    #       print("Warning: CUDA requested but not available. Falling back to CPU.")
+
+
   def get_model(self):
     ## Generator
+
+    # ++++++++++++++++++++++++++++ Temporarily removed attribute "shape" +++++++++++++++++++++++++++++++++++++
     print("Model Kwargs:", self.modelKwargs)  # Add this line to debug
     self.modelKwargs.pop('shape', None) # Remove "shape" attribute
+
     G = eval(self.args.model)(**self.modelKwargs)
 
     ## Discriminator
