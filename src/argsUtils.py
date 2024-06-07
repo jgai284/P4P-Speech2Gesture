@@ -7,18 +7,28 @@ def get_args_perm():
   parser = argparse.ArgumentParser()
 
   ## Dataset Parameters
-  parser.add_argument('-path2data', nargs='+', type=str, default=['../dataset/groot/data'],
+  # parser.add_argument('-path2data', nargs='+', type=str, default=['../dataset/groot/data'],
+  #                     help='path to data')
+  # parser.add_argument('-path2outdata', nargs='+', type=str, default=['../dataset/groot/data'],
+  #                     help='path to output data (used for pre-processing)')
+  parser.add_argument('-path2data', nargs='+', type=str, default=['F:/PATSDATASET/oliver/pats/data'],
                       help='path to data')
-  parser.add_argument('-path2outdata', nargs='+', type=str, default=['../dataset/groot/data'],
+  parser.add_argument('-path2outdata', nargs='+', type=str, default=['F:/PATSDATASET/oliver/pats/data'],
                       help='path to output data (used for pre-processing)')
+  
   parser.add_argument('-speaker', nargs='+', type=literal_eval, default=['oliver'],
-                      help='choose speaker or `all` to use all the speakers available')  
-  parser.add_argument('-modalities', nargs='+', type=literal_eval, default=[['pose/data', 'audio/log_mel_512']],
+                      help='choose speaker or `all` to use all the speakers available')
+    
+  # parser.add_argument('-modalities', nargs='+', type=literal_eval, default=[['pose/data', 'audio/log_mel_512']],
+  #                     help='choose a set of modalities to be loaded by the dataloader')  
+  parser.add_argument('-modalities', nargs='+', type=literal_eval, default=[['pose/data', 'audio/log_mel_400']],
                       help='choose a set of modalities to be loaded by the dataloader')  
-  parser.add_argument('-input_modalities', nargs='+', type=literal_eval, default=[None],
-                      help='choose the input modalities')  
-  # parser.add_argument('-input_modalities', nargs='+', type=str_to_list, default=[None],
+  
+  # parser.add_argument('-input_modalities', nargs='+', type=literal_eval, default=[None],
   #                     help='choose the input modalities')  
+  parser.add_argument('-input_modalities', nargs='+', type=literal_eval, default=[['audio/log_mel_400']],
+                      help='choose the input modalities')  
+  
   parser.add_argument('-output_modalities', nargs='+', type=literal_eval, default=[None],
                       help='choose the output_modalities')
   parser.add_argument('-mask', nargs='+', type=literal_eval, default=[[0, 7, 8, 9]],
