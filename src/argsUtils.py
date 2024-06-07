@@ -1,6 +1,7 @@
 import argparse
 import itertools
 from ast import literal_eval
+import ast
 
 def get_args_perm():
   parser = argparse.ArgumentParser()
@@ -16,6 +17,8 @@ def get_args_perm():
                       help='choose a set of modalities to be loaded by the dataloader')  
   parser.add_argument('-input_modalities', nargs='+', type=literal_eval, default=[None],
                       help='choose the input modalities')  
+  # parser.add_argument('-input_modalities', nargs='+', type=str_to_list, default=[None],
+  #                     help='choose the input modalities')  
   parser.add_argument('-output_modalities', nargs='+', type=literal_eval, default=[None],
                       help='choose the output_modalities')
   parser.add_argument('-mask', nargs='+', type=literal_eval, default=[[0, 7, 8, 9]],
@@ -256,3 +259,10 @@ def argparseNloop(loop):
     args.__dict__.update(perm)
     print(args)    
     loop(args, i)
+
+# Windows compatibility
+def str_to_list(arg):
+    try:
+        return ast.literal_eval(arg)
+    except ValueError:
+        raise argparse.ArgumentTypeError(f"Invalid list value: '{arg}'")
