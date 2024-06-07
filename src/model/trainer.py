@@ -160,7 +160,7 @@ class TrainerBase():
 
     ## ZNorm
     # +++++++++++++++++++++++++++++++ Temporarily commented out +++++++++++++++++++++++++++++++
-    # self.pre = self.get_pre()
+    self.pre = self.get_pre()
 
     ## Remove Joints / Reinsert Joints from data
     self.transform = self.get_transforms()

@@ -152,6 +152,7 @@ class ZNorm():
           if verbose:
             print('Loading Mean-Variance for {}'.format(variable))
       else:
+        print("Path2file: ", path2file)
         muvar = self.cal_muvar(path2file, variable, num_dims=num_dims)
         if verbose:
           print('Calculating Mean-Variance for {}'.format(variable))
@@ -201,6 +202,7 @@ class ZNorm():
     ## sample thorugh the complete dataset irrespective of the sampler
     dataloader = torch.utils.data.DataLoader(self.data.dataset, batch_size=32, collate_fn=collate_fn)
     #self.data.sampler = torch.utils.data.SequentialSampler(self.data.dataset)
+    print("Variable: ", variable)
     for batch in tqdm(dataloader, desc='mu+var for {}'.format(variable)):
       if self.pre is not None:
         batch = self.pre(batch)[variable]
