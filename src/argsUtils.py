@@ -16,6 +16,8 @@ def get_args_perm():
   parser.add_argument('-path2outdata', nargs='+', type=str, default=['F:/PATSDATASET/oliver/pats/data'],
                       help='path to output data (used for pre-processing)')
   
+  # parser.add_argument('-speaker', nargs='+', type=literal_eval, default=['oliver'],
+  #                     help='choose speaker or `all` to use all the speakers available')
   parser.add_argument('-speaker', nargs='+', type=literal_eval, default=[['oliver']],
                       help='choose speaker or `all` to use all the speakers available')
     
