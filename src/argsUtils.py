@@ -21,7 +21,7 @@ def get_args_perm():
     
   # parser.add_argument('-modalities', nargs='+', type=literal_eval, default=[['pose/data', 'audio/log_mel_512']],
   #                     help='choose a set of modalities to be loaded by the dataloader')  
-  parser.add_argument('-modalities', nargs='+', type=literal_eval, default=[['pose/data', 'audio/log_mel_400']],
+  parser.add_argument('-modalities', nargs='+', type=literal_eval, default=[['pose/normalize', 'audio/log_mel_400']],
                       help='choose a set of modalities to be loaded by the dataloader')  
   
   # parser.add_argument('-input_modalities', nargs='+', type=literal_eval, default=[None],

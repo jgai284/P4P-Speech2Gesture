@@ -109,7 +109,6 @@ class Modality(HDF5):
                preprocess_methods=['log_mel']):
     super(Modality, self).__init__()
     self.path2data = path2data
-
     # Load dataset?
     self.df = pd.read_csv(Path(self.path2data)/'cmu_intervals_df.csv', dtype=object)
     self.df.loc[:, 'delta_time'] = self.df['delta_time'].apply(float)
@@ -194,6 +193,9 @@ class MissingData(HDF5):
   def __init__(self, path2data):
     super(MissingData, self).__init__()
     self.path2file = Path(path2data)/'missing_intervals.h5'
+
+    # print("Processing missing intervals: ", self.path2file)
+
     if not os.path.exists(self.path2file):
       h5 = HDF5.h5_open(self.path2file, 'a')
       HDF5.h5_close(h5)

@@ -1048,17 +1048,6 @@ class TrainerGAN(TrainerBase):
     self.running_loss = [0]
     self.running_count = [1e-10]
 
-    # Check CUDA availability
-    # if torch.cuda.is_available():
-    #   if args.cuda >= 0 and args.cuda < torch.cuda.device_count():
-    #       print("CUDA available")
-    #   else:
-    #       raise ValueError("Invalid CUDA device index")
-    # else:
-    #   if args.cuda >= 0:
-    #       print("Warning: CUDA requested but not available. Falling back to CPU.")
-
-
   def get_model(self):
     ## Generator
     G = eval(self.args.model)(**self.modelKwargs)

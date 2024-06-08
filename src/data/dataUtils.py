@@ -133,6 +133,8 @@ class Data(Modality):
     self.df = pd.read_csv((Path(self.path2data)/'cmu_intervals_df.csv').as_posix())
 
     # self.df = self.df.append(pd.read_csv((Path(self.path2data)/'cmu_intervals_df_transforms.csv').as_posix())) ## file with evil twins
+
+    # Update pandas data structure operation (bug fixed)
     new_df = pd.read_csv((Path(self.path2data)/'cmu_intervals_df_transforms.csv').as_posix())
     self.df = pd.concat([self.df, new_df], ignore_index=True)
 
@@ -270,6 +272,9 @@ class Data(Modality):
     ## get missing intervals
     missing_intervals = self.missing.load_intervals()
     missing_intervals = self.get_transforms_missing_intervals(missing_intervals)
+
+    # Convert byte strings in missing_intervals to regular strings (bug fixed)
+    missing_intervals = {interval.decode('utf-8') if isinstance(interval, bytes) else interval for interval in missing_intervals}
     
     ## get new train/dev/test intervals
     get_intervals = lambda x: sorted(list(set(x['interval_id'].unique()) - missing_intervals))
