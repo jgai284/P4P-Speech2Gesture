@@ -159,7 +159,6 @@ class TrainerBase():
     self.schedulers = self.get_scheduler()
 
     ## ZNorm
-    # +++++++++++++++++++++++++++++++ Temporarily commented out +++++++++++++++++++++++++++++++
     self.pre = self.get_pre()
 
     ## Remove Joints / Reinsert Joints from data
