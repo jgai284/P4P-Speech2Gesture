@@ -27,7 +27,7 @@ class Speech2Gesture_G(nn.Module):
   '''
 
   # Constructor
-  def __init__(self, time_steps=64, in_channels=256, out_feats=104, p=0):
+  def __init__(self, time_steps=64, in_channels=256, out_feats=104, p=0, **kwargs):
     super(Speech2Gesture_G, self).__init__()
 
     # Layers

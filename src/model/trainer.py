@@ -1061,11 +1061,6 @@ class TrainerGAN(TrainerBase):
 
   def get_model(self):
     ## Generator
-
-    # ++++++++++++++++++++++++++++ Temporarily removed attribute "shape" +++++++++++++++++++++++++++++++++++++
-    print("Model Kwargs:", self.modelKwargs)  # Add this line to debug
-    self.modelKwargs.pop('shape', None) # Remove "shape" attribute
-
     G = eval(self.args.model)(**self.modelKwargs)
 
     ## Discriminator
