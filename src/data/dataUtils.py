@@ -195,6 +195,7 @@ class Data(Modality):
   #   else:
   #     return self.df[self.df[column] == value]
 
+  # return speaker name based on interval id
   def getSpeaker(self, x):
     return self.get_df_subset('interval_id', x)['speaker'].values[0]
 

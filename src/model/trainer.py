@@ -56,7 +56,8 @@ class TrainerBase():
     ## Training parameters
     self.path2data = self.args.path2data
     self.path2outdata = self.args.path2outdata
-    self.speaker = self.args.speaker
+    # self.speaker = self.args.speaker 
+    self.speaker = ['oliver'] # bug
     self.modalities = self.args.modalities
     if self.args.input_modalities is None: ## infer inputs and outputs from self.modalities
       self.input_modalities = self.modalities[1:]
