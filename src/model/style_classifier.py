@@ -14,7 +14,8 @@ import torch.nn as nn
 class StyleClassifier_G(nn.Module):
   def __init__(self, time_steps=64, in_channels=256, p=0, style_dict={}, **kwargs):
     super().__init__()
-    out_feats = len(style_dict)
+    # out_feats = len(style_dict) # num of speakers
+    out_feats = 25 # Change default num of speaker from 1 to 25 (bug fixed) 
 
     self.classifier = nn.ModuleList()
     self.classifier.append(ConvNormRelu(in_channels, 64, downsample=True))
