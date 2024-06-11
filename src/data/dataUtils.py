@@ -132,9 +132,8 @@ class Data(Modality):
     ## Load the master table
     self.df = pd.read_csv((Path(self.path2data)/'cmu_intervals_df.csv').as_posix())
 
-    # self.df = self.df.append(pd.read_csv((Path(self.path2data)/'cmu_intervals_df_transforms.csv').as_posix())) ## file with evil twins
-
     # Update pandas data structure operation (bug fixed)
+    # self.df = self.df.append(pd.read_csv((Path(self.path2data)/'cmu_intervals_df_transforms.csv').as_posix())) ## file with evil twins
     new_df = pd.read_csv((Path(self.path2data)/'cmu_intervals_df_transforms.csv').as_posix())
     self.df = pd.concat([self.df, new_df], ignore_index=True)
 
