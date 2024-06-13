@@ -22,7 +22,7 @@ Defines the specific architectures of the generator and discriminator models use
 
 ### style_classifier.py - line 20
 
-Change default num of speaker from 1 to 25
+Change default num of speaker from input to 25 if pretrained model (trainer.py - line 405 & 406) is activated
 
 ### dataUtils.py - line 138
 
