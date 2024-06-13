@@ -57,9 +57,9 @@ class TrainerBase():
     self.path2data = self.args.path2data
     self.path2outdata = self.args.path2outdata
 
-    # have to manually replace speaker arugment otherwise it would become shelly (bug fixed)
-    # self.speaker = self.args.speaker 
-    self.speaker = ['oliver']
+    # have to manually replace speaker arugment if pretrained model (line 405 & 406) is activated otherwise it would become shelly (bug fixed)
+    self.speaker = self.args.speaker 
+    # self.speaker = ['oliver']
 
     self.modalities = self.args.modalities
     if self.args.input_modalities is None: ## infer inputs and outputs from self.modalities
@@ -401,8 +401,9 @@ class TrainerBase():
     self.diversity = self.get_Diversity()
     self.expressiveness = self.get_Expressiveness()
     self.f1, self.f1_cluster = self.get_F1()
-    if not self.pretrained_model: ## if this is a pretrained model do not get self.IS to avoid a loop
-      self.IS = self.get_IS()
+    # No pretrained model (bug fixed)
+    # if not self.pretrained_model: ## if this is a pretrained model do not get self.IS to avoid a loop
+    #   self.IS = self.get_IS()
     self.fid = self.get_FID()
     self.w1 = self.get_W1()
 
