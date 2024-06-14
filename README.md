@@ -10,10 +10,6 @@ PATS
 
 TBD
 
-## Training
-
-TBD
-
 ## Virtual environment
 
 ### Windows
@@ -27,6 +23,42 @@ Exit virtual environment: `deactivate` <br>
 Create new virtual environment: `python3 -m venv .venv` <br>
 Activate virtual environment: `source .venv/bin/activate` <br>
 Exit virtual environment: `deactivate` <br>
+
+## Training
+
+Windows:
+
+```sh
+python src/train.py -batch_size 32 -cpk speech2gesture -early_stopping 0 -exp 1 -fs_new '[15, 15]' -gan 1 -loss L1Loss -model Speech2Gesture_G -note speech2gesture -num_epochs 100 -overfit 0 -render 0 -save_dir save/speech2gesture/oliver -stop_thresh 3 -tb 1 -window_hop 5
+```
+
+Linux:
+
+```sh
+python src/train.py -path2data 'F:/PATSDATASET/oliver/pats/data' -path2outdata 'F:/PATSDATASET/oliver/pats/data' -batch_size 32 -cpk speech2gesture -early_stopping 0 -exp 1 -fs_new '[15, 15]' -gan 1 -input_modalities '["audio/log_mel_400"]' -loss L1Loss -modalities '["pose/data", "audio/log_mel_400"]' -model Speech2Gesture_G -note speech2gesture -num_epochs 100 -overfit 0 -render 0 -save_dir save/speech2gesture/oliver -speaker '["oliver"]' -stop_thresh 3 -tb 1 -window_hop 5
+```
+
+## Quantitative evaluation
+
+```sh
+python sample.py -load "D:\UoA\SOFTENG700A\P4P-Speech2Gesture\save\speech2gesture\oliver\exp_105_cpk_speech2gesture_speaker_['oliver']_model_Speech2Gesture_G_note_speech2gesture_weights.p" -path2data "F:\PATSDATASET\oliver\pats\data"
+```
+
+## Evaluation metrics
+
+TBD
+
+## Inference
+
+```sh
+python sample.py -load "D:\UoA\SOFTENG700A\P4P-Speech2Gesture\save\speech2gesture\oliver\exp_105_cpk_speech2gesture_speaker_['oliver']_model_Speech2Gesture_G_note_speech2gesture_weights.p" -sample_all_styles 20 -path2data "F:\PATSDATASET\oliver\pats\data"
+```
+
+## Rendering
+
+```sh
+python render.py -render 20  -load "D:\UoA\SOFTENG 700A\P4P-Speech2Gesture\save\speech2gesture\oliver\exp_105_cpk_speech2gesture_speaker_['oliver']_model_Speech2Gesture_G_note_speech2gesture_weights.p" -render_text 0 -path2data "F:\PATSDATASET\oliver\pats\data"
+```
 
 ## Codebase introduction
 
