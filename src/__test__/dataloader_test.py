@@ -11,7 +11,6 @@ def main():
     # Specify the path storing cmu_intervals_df.csv and cmu_intervals_df_transform.csv
     # E.g. 'UoA/James' gives 'UoA/James/cmu_intervals_df.csv'
 
-    # path2data = 'D:/UoA/SOFTENG 700A/P4P-Speech2Gesture'
     path2data = 'F:/PATSDATASET/oliver/pats/data'
     speaker = ["oliver"]
     modalities = ['pose/data', 'audio/log_mel_512']
