@@ -1,6 +1,34 @@
 # P4P-Speech2Gesture
 
-## Class introduction
+Introduction of P4P
+
+## Dataset
+
+PATS
+
+## Set up environment
+
+TBD
+
+## Training
+
+TBD
+
+## Virtual environment
+
+### Windows
+
+Create new virtual environment: `python -m venv .venv` <br>
+Activate virtual environment: `.venv\Scripts\activate` <br>
+Exit virtual environment: `deactivate` <br>
+
+### Linux
+
+Create new virtual environment: `python3 -m venv .venv` <br>
+Activate virtual environment: `source .venv/bin/activate` <br>
+Exit virtual environment: `deactivate` <br>
+
+## Codebase introduction
 
 ### gan.py
 
@@ -12,7 +40,7 @@ Defines the specific architectures of the generator and discriminator models use
 
 ## Dependencies
 
-#### scipy: version 1.10.1
+#### scipy: `version 1.10.1`
 
 #### gensim: TBD
 
