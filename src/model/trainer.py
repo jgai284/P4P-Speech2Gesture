@@ -46,6 +46,7 @@ Trainer Skeleton
 '''
 
 # Note: some training functions are for mix-stage only therefore useless in speech2gesture
+# For speech2gesture training purposes, only classes TrainerBase, Trainer, TrainerGAN, and TrainerStyleClassifier are needed
 
 class TrainerBase():
   def __init__(self, args, args_subset, args_dict_update={}):
