@@ -17,7 +17,7 @@ Windows
 3. `mkdir ..\pycasper`
 4. `git clone https://github.com/chahuja/pycasper ..\pycasper`
 5. `cd src`
-6. mklink /D pycasper ..\..\pycasper\pycasper
+6. `mklink /D pycasper ..\..\pycasper\pycasper`
 
 ### Dependencies
 
