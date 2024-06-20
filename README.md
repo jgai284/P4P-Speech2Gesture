@@ -10,7 +10,14 @@ Introduction of P4P
 
 ### pycasper
 
-1. TBD
+Windows
+
+1. Open cmd as admin
+2. Navigate to `P4P-Speech2Gesture`
+3. `mkdir ..\pycasper`
+4. `git clone https://github.com/chahuja/pycasper ..\pycasper`
+5. `cd src`
+6. mklink /D pycasper ..\..\pycasper\pycasper
 
 ### Dependencies
 
