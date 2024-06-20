@@ -146,6 +146,10 @@ python render.py -render 20 -load "D:\UoA\SOFTENG 700A\P4P-Speech2Gesture\save\s
 
 - Updated some parameters to ensure compatibility issue with Windows, dataset storage, data type (originally designed for Linux)
 
+## Lab workstation setup
+
+[Instructions](https://github.com/jgai284/P4P-Speech2Gesture/GPU.md)
+
 ## Reference
 
 - [Speech2Gesture](https://people.eecs.berkeley.edu/~shiry/speech2gesture/)<br>
