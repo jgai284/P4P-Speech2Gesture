@@ -148,7 +148,7 @@ python render.py -render 20 -load "D:\UoA\SOFTENG 700A\P4P-Speech2Gesture\save\s
 
 ## Lab workstation setup
 
-[Instructions](https://github.com/jgai284/P4P-Speech2Gesture/GPU.md)
+[Instructions](GPU.md)
 
 ## Reference
 
