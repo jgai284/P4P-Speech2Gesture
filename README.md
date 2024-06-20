@@ -18,7 +18,7 @@ Introduction of P4P
 
 ### ffmpeg
 
-1. [download](https://github.com/BtbN/FFmpeg-Builds/releases) ffmpeg
+1. download [ffmpeg](https://github.com/BtbN/FFmpeg-Builds/releases)
 2. unzip the packgae
 3. add the directory there .exe files are stored to system path
 4. check ffmpeg installation `ffmpeg --version`
@@ -107,11 +107,11 @@ python render.py -render 20 -load "D:\UoA\SOFTENG 700A\P4P-Speech2Gesture\save\s
 
 ### webrtcvad:
 
-- Install [visual studio C++ build tool](https://visualstudio.microsoft.com/downloads/?q=build+tools) on Windows
+- Install [Microsoft C++ build tool](https://visualstudio.microsoft.com/visual-cpp-build-tools/) on Windows
 
 ## Bug report
 
-### style_classifier.py - [line 20](<(https://github.com/jgai284/P4P-Speech2Gesture/blob/main/src/model/style_classifier.py#L20)>)
+### style_classifier.py - [line 20](https://github.com/jgai284/P4P-Speech2Gesture/blob/main/src/model/style_classifier.py#L20)
 
 - Change default num of speaker from input to 25 if pretrained model (trainer.py - [line 406](https://github.com/jgai284/P4P-Speech2Gesture/blob/main/src/model/trainer.py#L406)) is activated
 
