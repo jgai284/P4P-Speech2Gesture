@@ -7,6 +7,14 @@ WORKDIR /app
 # COPY <src> <dest>
 COPY  . /app
 
+RUN apt-get update && apt-get install -y python3-pip
+
+# Install pycasper
+RUN mkdir /pycasper \
+    && git clone https://github.com/chahuja/pycasper /pycasper \
+    && rm -rf /app/src/pycasper \
+    && ln -s /pycasper/pycasper /app/src/pycasper
+
 # Install dependencies
 # No need to activate virtual environment in a docker container
 RUN pip install --no-cache-dir -r requirements.txt
