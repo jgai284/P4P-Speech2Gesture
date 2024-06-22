@@ -1,0 +1,7 @@
+.venv/
+__pycache__
+dataset
+save/speech2gesture/
+*pyc
+*py~
+__pycache__
