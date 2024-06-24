@@ -12,6 +12,12 @@ TBD
 
 ## Set up environment
 
+### Python version
+
+`3.8` - `3.11`
+
+e.g `3.11.9`
+
 ### pycasper
 
 Windows
