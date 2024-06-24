@@ -2,6 +2,10 @@
 
 Introduction of P4P
 
+## Unique improvements
+
+TBD
+
 ## Dataset
 
 [PATS](https://chahuja.com/pats/) and [Repo](https://github.com/chahuja/pats)
@@ -17,7 +21,8 @@ Windows
 3. `mkdir ..\pycasper`
 4. `git clone https://github.com/chahuja/pycasper ..\pycasper`
 5. `cd src`
-6. `mklink /D pycasper ..\..\pycasper\pycasper`
+6. Delete existing `pycasper` folder (if needed)
+7. `mklink /D pycasper ..\..\pycasper\pycasper`
 
 ### Dependencies
 
@@ -49,13 +54,13 @@ Windows
 Windows:
 
 ```sh
-python src/train.py -batch_size 32 -cpk speech2gesture -early_stopping 0 -exp 1 -fs_new '[15, 15]' -gan 1 -loss L1Loss -model Speech2Gesture_G -note speech2gesture -num_epochs 100 -overfit 0 -render 0 -save_dir save/speech2gesture/oliver -stop_thresh 3 -tb 1 -window_hop 5
+python src/train.py -path2data '<path_name>' -path2outdata '<path_name>' -batch_size 32 -cpk speech2gesture -early_stopping 0 -exp 1 -fs_new '[15, 15]' -gan 1 -loss L1Loss -model Speech2Gesture_G -note speech2gesture -num_epochs 100 -overfit 0 -render 0 -save_dir save/speech2gesture/oliver -stop_thresh 3 -tb 1 -window_hop 5
 ```
 
 Linux:
 
 ```sh
-python src/train.py -path2data 'F:/PATSDATASET/oliver/pats/data' -path2outdata 'F:/PATSDATASET/oliver/pats/data' -batch_size 32 -cpk speech2gesture -early_stopping 0 -exp 1 -fs_new '[15, 15]' -gan 1 -input_modalities '["audio/log_mel_400"]' -loss L1Loss -modalities '["pose/data", "audio/log_mel_400"]' -model Speech2Gesture_G -note speech2gesture -num_epochs 100 -overfit 0 -render 0 -save_dir save/speech2gesture/oliver -speaker '["oliver"]' -stop_thresh 3 -tb 1 -window_hop 5
+python src/train.py -path2data '<path_name>' -path2outdata '<path_name>' -batch_size 32 -cpk speech2gesture -early_stopping 0 -exp 1 -fs_new '[15, 15]' -gan 1 -input_modalities '["audio/log_mel_400"]' -loss L1Loss -modalities '["pose/data", "audio/log_mel_400"]' -model Speech2Gesture_G -note speech2gesture -num_epochs 100 -overfit 0 -render 0 -save_dir save/speech2gesture/oliver -speaker '["oliver"]' -stop_thresh 3 -tb 1 -window_hop 5
 ```
 
 ## Quantitative evaluation
