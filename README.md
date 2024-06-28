@@ -60,47 +60,59 @@ Windows
 Windows:
 
 ```sh
-python src/train.py -path2data '<path_name>' -path2outdata '<path_name>' -batch_size 32 -cpk speech2gesture -early_stopping 0 -exp 1 -fs_new '[15, 15]' -gan 1 -loss L1Loss -model Speech2Gesture_G -note speech2gesture -num_epochs 100 -overfit 0 -render 0 -save_dir save/speech2gesture/oliver -stop_thresh 3 -tb 1 -window_hop 5
+python src/train.py -path2data "<path_to_dataset>" -path2outdata "<path_to_dataset>" -batch_size 32 -cpk speech2gesture -early_stopping 0 -exp 1 -fs_new '[15, 15]' -gan 1 -loss L1Loss -model Speech2Gesture_G -note speech2gesture -num_epochs 100 -overfit 0 -render 0 -save_dir save/speech2gesture/oliver -stop_thresh 3 -tb 1 -window_hop 5
 ```
 
 Linux:
 
 ```sh
-python src/train.py -path2data '<path_name>' -path2outdata '<path_name>' -batch_size 32 -cpk speech2gesture -early_stopping 0 -exp 1 -fs_new '[15, 15]' -gan 1 -input_modalities '["audio/log_mel_400"]' -loss L1Loss -modalities '["pose/data", "audio/log_mel_400"]' -model Speech2Gesture_G -note speech2gesture -num_epochs 100 -overfit 0 -render 0 -save_dir save/speech2gesture/oliver -speaker '["oliver"]' -stop_thresh 3 -tb 1 -window_hop 5
+python src/train.py -path2data '<path_to_dataset>' -path2outdata '<path_to_dataset>' -batch_size 32 -cpk speech2gesture -early_stopping 0 -exp 1 -fs_new '[15, 15]' -gan 1 -input_modalities '["audio/log_mel_400"]' -loss L1Loss -modalities '["pose/data", "audio/log_mel_400"]' -model Speech2Gesture_G -note speech2gesture -num_epochs 100 -overfit 0 -render 0 -save_dir save/speech2gesture/oliver -speaker '["oliver"]' -stop_thresh 3 -tb 1 -window_hop 5
 ```
 
-## Quantitative evaluation
+## Quantitative evaluation (Optional)
+
+Produce evaluation in respect to quantitative metrics outlined below **_(Can be done during training process)_**
 
 ```sh
 cd src
 ```
 
 ```sh
-python sample.py -load "D:\UoA\SOFTENG700A\P4P-Speech2Gesture\save\speech2gesture\oliver\exp_105_cpk_speech2gesture_speaker_['oliver']_model_Speech2Gesture_G_note_speech2gesture_weights.p" -path2data "F:\PATSDATASET\oliver\pats\data"
+python sample.py -load "<path_to_weight>" -path2data "<path_to_dataset>"
 ```
 
 ## Evaluation metrics
 
-TBD
+L1 Loss
 
-## Inference
+PCK
+
+F1
+
+IS
+
+## Inference (Optional)
+
+Generate upper body keypoints **_(Can be done during training process)_**
 
 ```sh
 cd src
 ```
 
 ```sh
-python sample.py -load "D:\UoA\SOFTENG700A\P4P-Speech2Gesture\save\speech2gesture\oliver\exp_105_cpk_speech2gesture_speaker_['oliver']_model_Speech2Gesture_G_note_speech2gesture_weights.p" -sample_all_styles 20 -path2data "F:\PATSDATASET\oliver\pats\data"
+python sample.py -load "<path_to_weight>" -sample_all_styles 20 -path2data "<path_to_dataset>"
 ```
 
 ## Rendering
 
+Generate pose animation
+
 ```sh
 cd src
 ```
 
 ```sh
-python render.py -render 20 -load "D:\UoA\SOFTENG 700A\P4P-Speech2Gesture\save\speech2gesture\oliver\exp_105_cpk_speech2gesture_speaker_['oliver']_model_Speech2Gesture_G_note_speech2gesture_weights.p" -render_text 0 -path2data "F:\PATSDATASET\oliver\pats\data"
+python render.py -render 20 -load "<path_to_weight>" -render_text 0 -path2data "<path_to_dataset>"
 ```
 
 ## Codebase introduction
