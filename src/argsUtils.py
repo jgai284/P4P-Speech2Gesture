@@ -7,13 +7,9 @@ def get_args_perm():
   parser = argparse.ArgumentParser()
 
   ## Dataset Parameters
-  # parser.add_argument('-path2data', nargs='+', type=str, default=['../dataset/groot/data'],
-  #                     help='path to data')
-  # parser.add_argument('-path2outdata', nargs='+', type=str, default=['../dataset/groot/data'],
-  #                     help='path to output data (used for pre-processing)')
-  parser.add_argument('-path2data', nargs='+', type=str, default=['F:/PATSDATASET/oliver/pats/data'],
+  parser.add_argument('-path2data', nargs='+', type=str, default=['../dataset/groot/data'],
                       help='path to data')
-  parser.add_argument('-path2outdata', nargs='+', type=str, default=['F:/PATSDATASET/oliver/pats/data'],
+  parser.add_argument('-path2outdata', nargs='+', type=str, default=['../dataset/groot/data'],
                       help='path to output data (used for pre-processing)')
   
   # parser.add_argument('-speaker', nargs='+', type=literal_eval, default=['oliver'],
