@@ -15,9 +15,9 @@ class StyleClassifier_G(nn.Module):
   def __init__(self, time_steps=64, in_channels=256, p=0, style_dict={}, **kwargs):
     super().__init__()
 
-    # Change default num of speaker from input to 25 if pretrained model (trainer.py - line 405 & 406) is activated (bug fixed)
-    out_feats = len(style_dict) # num of speakers
-    # out_feats = 25 
+    # Change default num of speaker from input to 25 if pretrained model (trainer.py - line 406 & 407) is activated (bug fixed)
+    # out_feats = len(style_dict) # num of speakers (No IS)
+    out_feats = 25 # (IS)
 
     self.classifier = nn.ModuleList()
     self.classifier.append(ConvNormRelu(in_channels, 64, downsample=True))

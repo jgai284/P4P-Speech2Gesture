@@ -23,6 +23,11 @@ import gc
 import pdb
 import torch
 
+# Hide warning message when activate IS metric
+import warnings
+warnings.filterwarnings('ignore', message="A single label was found in 'y_true' and 'y_pred'. For the confusion matrix to have the correct shape, use the 'labels' parameter to pass all known labels.")
+
+
 def loop(args, exp_num):
   sample_all_styles = args.sample_all_styles
   finetune_quantile_sample =  args.finetune_quantile_sample

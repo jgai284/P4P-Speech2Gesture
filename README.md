@@ -143,7 +143,7 @@ python render.py -render 20 -load "<path_to_weight>" -render_text 0 -path2data "
 
 ## Bug report
 
-### style_classifier.py - [line 20](https://github.com/jgai284/P4P-Speech2Gesture/blob/main/src/model/style_classifier.py#L20)
+### style_classifier.py - [line 19](https://github.com/jgai284/P4P-Speech2Gesture/blob/main/src/model/style_classifier.py#L20)
 
 - Change default num of speaker from input to 25 if pretrained model (trainer.py - [line 406](https://github.com/jgai284/P4P-Speech2Gesture/blob/main/src/model/trainer.py#L406)) is activated
 
