@@ -421,6 +421,7 @@ class TrainerBase():
   def metric_order(self):
     if self.metrics:
       metric_order = ['pck', 'F1',
+                      'FID', 'W1_vel', 'W1_acc',
                       'style_IS']
     else:
       metric_order = []

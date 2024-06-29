@@ -91,6 +91,10 @@ PCK
 
 F1
 
+FID
+
+W1 (W1_vel & W1_acc)
+
 IS
 
 ## Inference (Optional)
@@ -132,10 +136,6 @@ python render.py -render 20 -load "<path_to_weight>" -render_text 0 -path2data "
 ### scipy:
 
 - `pip install scipy==1.10.1`
-
-### gensim:
-
-- TBD
 
 ### webrtcvad:
 
