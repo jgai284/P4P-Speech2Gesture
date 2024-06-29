@@ -63,7 +63,7 @@ docker tag <image-name>:<image-tag> <repo-name>:<image-tag>
 2. Push the image:
 
 ```sh
-docker push <username>/<image-name>:<image-tag>
+docker push <image-name>:<image-tag>
 ```
 
 Mount directory to container
