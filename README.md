@@ -179,4 +179,3 @@ python render.py -render 20 -load "<path_to_weight>" -render_text 0 -path2data "
 
 - [Speech2Gesture](https://people.eecs.berkeley.edu/~shiry/speech2gesture/)<br>
 - [Mix-stage](https://github.com/chahuja/mix-stage)
-- [AISLe](https://github.com/chahuja/aisle)
