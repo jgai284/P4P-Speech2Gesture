@@ -97,18 +97,6 @@ W1 (W1_vel & W1_acc)
 
 IS
 
-## Inference (Optional)
-
-Generate upper body keypoints **_(Can be done during training process)_**
-
-```sh
-cd src
-```
-
-```sh
-python sample.py -load "<path_to_weight>" -sample_all_styles 20 -path2data "<path_to_dataset>"
-```
-
 ## Rendering
 
 Generate pose animation
