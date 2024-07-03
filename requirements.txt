@@ -18,3 +18,4 @@ tqdm
 PyYAML
 scikit_learn
 tensorboard
+tables

@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 import numpy as np
 import sys
+import os
 
 parents = [-1,
             0, 1, 2,
@@ -43,6 +44,22 @@ joints = ['Neck',
 def show_file_content(file_path):
     df = pd.read_hdf(file_path)
     print(df)
+
+def show_all_file_content(dir_path, path_to_dataset):
+    rendered_files = [file.split('.')[0] for file in os.listdir(dir_path)]
+    
+    for file_name in rendered_files:
+        file_path = os.path.join(path_to_dataset, f"{file_name}.h5")
+        try:
+            df = pd.read_hdf(file_path)
+            print(f"'{file_name}.h5':")
+            # Concatenate all words into a single string
+            words_str = ' '.join(df['Word'])
+            print(words_str)
+            print()
+        except Exception as e:
+            print(f"Error reading file '{file_name}.h5': {str(e)}")
+            print()
 
 def inspect_h5(file_path):
     with h5py.File(file_path, 'r') as h5_file:
@@ -143,8 +160,12 @@ def plot_animation(file_path):
 if __name__ == '__main__':
     # file_path = "D:\\UoA\\SOFTENG 700A\\mix-stage-master\\src\\data\\visualization\\features\\cmu0000033570.h5" # noah
     file_path = "D:\\UoA\SOFTENG 700A\\mix-stage-master\\src\\data\\visualization\\features\\100912.h5" # oliver
+    render_dir_path = "D:\\UoA\SOFTENG 700A\\P4P-Speech2Gesture\\save\\speech2gesture\oliver\\exp_113_cpk_speech2gesture_speaker_['oliver']_model_Speech2Gesture_G_note_speech2gesture\\render\\test\oliver"
+    path_to_dataset = "E:\\PATS\\pats\\data\\processed\\oliver"
+
     # show_file_content(file_path)
+    show_all_file_content(render_dir_path, path_to_dataset)
     # inspect_h5(file_path)
     # export_to_csv(file_path)
     # plot_keypoints(file_path)
-    plot_animation(file_path)
+    # plot_animation(file_path)
