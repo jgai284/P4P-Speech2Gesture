@@ -160,7 +160,7 @@ def plot_animation(file_path):
 if __name__ == '__main__':
     # file_path = "D:\\UoA\\SOFTENG 700A\\mix-stage-master\\src\\data\\visualization\\features\\cmu0000033570.h5" # noah
     file_path = "D:\\UoA\SOFTENG 700A\\mix-stage-master\\src\\data\\visualization\\features\\100912.h5" # oliver
-    render_dir_path = "D:\\UoA\SOFTENG 700A\\P4P-Speech2Gesture\\save\\speech2gesture\oliver\\exp_113_cpk_speech2gesture_speaker_['oliver']_model_Speech2Gesture_G_note_speech2gesture\\render\\test\oliver"
+    render_dir_path = "D:\\UoA\SOFTENG 700A\\P4P-Speech2Gesture\\save\\speech2gesture\oliver\\exp_113_cpk_speech2gesture_speaker_['oliver']_model_Speech2Gesture_G_note_speech2gesture\\render\\test\\oliver"
     path_to_dataset = "E:\\PATS\\pats\\data\\processed\\oliver"
 
     # show_file_content(file_path)
