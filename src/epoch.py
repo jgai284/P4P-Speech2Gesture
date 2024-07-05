@@ -71,19 +71,19 @@ def plot_loss(file_path):
     axs[1, 1].set_ylim(0, 1)
     axs[1, 1].legend()
     
-    # Plot for subfigure 3: FID Loss (column 1)
+    # Plot for subfigure 3: FID Score (column 1)
     axs[2, 0].plot(df_400['test_FID'], label='Test FID Score (400)')
     axs[2, 0].plot(df_400['train_FID'], label='Train FID Score (400)')
     axs[2, 0].set_title('FID Score (400)')
     axs[2, 0].set_xlabel('Epochs')
-    axs[2, 0].set_ylabel('Loss')
+    axs[2, 0].set_ylabel('Score')
     axs[2, 0].legend()
 
     axs[2, 1].plot(df_512['test_FID'], label='Test FID Score (512)')
     axs[2, 1].plot(df_512['train_FID'], label='Train FID Score (512)')
     axs[2, 1].set_title('FID Score (512)')
     axs[2, 1].set_xlabel('Epochs')
-    axs[2, 1].set_ylabel('Loss')
+    axs[2, 1].set_ylabel('Score')
     axs[2, 1].legend()
     
     # Adjust layout and spacing
