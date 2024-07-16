@@ -169,3 +169,72 @@ class GAN(nn.Module):
 
     args.update(dict(W=W))
     return fake_pose, internal_losses, args
+  
+class GANWeighted(GAN):
+  def __init__(self, G, D, dg_iter_ratio=1,
+               lambda_D=1, lambda_gan=1, lr=0.0001,
+               criterion='MSELoss', optim='Adam', joint=False, **kwargs):
+    super().__init__(G=G, D=D, dg_iter_ratio=dg_iter_ratio, lambda_D=lambda_D, lambda_gan=lambda_gan,
+                     lr=lr, criterion=criterion, optim=optim, joint=joint, **kwargs)
+    self.gan_criterion = torch.nn.CrossEntropyLoss(reduction='none')
+  
+  def get_real_gt(self, x):
+    return torch.ones(x.shape[0], x.shape[1]).long().to(x.device)
+
+  def get_fake_gt(self, x):
+    return torch.zeros(x.shape[0], x.shape[1]).long().to(x.device)
+
+  def get_gan_loss(self, y_cap, y, W):
+    orig_shape = y.shape
+    y_cap = y_cap.reshape(-1, y_cap.shape[-1])
+    y = y.reshape(-1)
+    loss = self.gan_criterion(y_cap, y).view(*orig_shape)
+    return self.sample_wise_weight_mean(loss, W)
+
+  def estimate_weights(self, x_audio, y_pose, **kwargs):
+    with torch.no_grad():
+      fake_pose, partial_i_loss, *args = self.G(x_audio, y_pose, **kwargs)
+      args = args[0] if len(args)>0 else {}
+      
+      ## convert pose to velocity
+      fake_pose_v = self.get_velocity(fake_pose, x_audio)
+      fake_pose_score, _ = self.D(fake_pose_v)
+      #fake_pose_score = fake_pose_score.reshape(-1, fake_pose_score.shape[-1])
+      
+      outputs = torch.nn.functional.softmax(fake_pose_score, dim=-1).mean(-2)
+      w = ((outputs[:, 1]/outputs[:, 0]))
+
+      #w = ((outputs[:, 0]/outputs[:, 1]) / gamma)    
+      w = 1/w
+      if torch.isnan(w).any(): ## if there is some anomaly default to ones
+        w = torch.ones_like(w)
+      if torch.isinf(w).any():
+        w = torch.ones_like(w)
+      max_weight = 10
+      mask = w > max_weight 
+      w[mask] = max_weight
+
+    return w, outputs
+
+  def estimate_weights_loss(self, W):
+    return torch.ones_like(W)
+
+  def update_D_prob(self, W):
+    W_ = min(max(W.mean().item(), 0.1), 10)
+    W_ = math.log(W_)/math.log(10)
+    W_ = (W_ + 1)/2
+    W_ = 1 - W_
+    W_ = max(min(W_, 0.9), 0.1) ## clip values between 0.1 and 0.9
+    self.D_prob = 1-W_ ## if the samples are not able to fool the discriminator, imrpove the generator in their favour
+    
+    
+class GANClassify(GAN):
+  def __init__(self, G, D, dg_iter_ratio=1,
+               lambda_D=1, lambda_gan=1, lr=0.0001,
+               criterion='MSELoss', optim='Adam', **kwargs):
+    super().__init__(G, D, dg_iter_ratio=dg_iter_ratio,
+                     lambda_D=lambda_D, lambda_gan=lambda_gan, lr=lr,
+                     criterion=criterion, optim=optim, **kwargs)
+
+  def get_velocity(self, x):
+    return x
