@@ -60,7 +60,7 @@ class TrainerBase():
 
     # have to manually replace speaker arugment if pretrained model (line 406 & 407) is activated otherwise it would become shelly (bug fixed)
     # self.speaker = self.args.speaker # (No IS)
-    self.speaker = ['oliver', 'noah', 'seth', 'shelly'] # (IS)
+    self.speaker = ['oliver', 'noah', 'seth', 'shelly', 'ellen'] # (IS)
 
     self.modalities = self.args.modalities
     if self.args.input_modalities is None: ## infer inputs and outputs from self.modalities
