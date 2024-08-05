@@ -14,7 +14,7 @@ def get_args_perm():
   
   # parser.add_argument('-speaker', nargs='+', type=literal_eval, default=['oliver'],
   #                     help='choose speaker or `all` to use all the speakers available')
-  parser.add_argument('-speaker', nargs='+', type=literal_eval, default=[['oliver', 'noah', 'seth', 'shelly', 'ellen']],
+  parser.add_argument('-speaker', nargs='+', type=literal_eval, default=[['oliver']],
                       help='choose speaker or `all` to use all the speakers available')
     
   # parser.add_argument('-modalities', nargs='+', type=literal_eval, default=[['pose/data', 'audio/log_mel_512']],
