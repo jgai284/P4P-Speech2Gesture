@@ -4,6 +4,10 @@ import pdb
 from pycasper.BookKeeper import *
 from pycasper.argsUtils import *
 
+# Hide warning message when activate IS metric
+import warnings
+warnings.filterwarnings('ignore', message="A single label was found in 'y_true' and 'y_pred'. For the confusion matrix to have the correct shape, use the 'labels' parameter to pass all known labels.")
+
 def loop(args, exp_num):
   args_subset = ['exp', 'cpk', 'speaker', 'model']
   args_dict_update = {'render':args.render, 'window_hop':0, 'sample_all_styles':args.sample_all_styles}

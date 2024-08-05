@@ -779,9 +779,22 @@ class TrainerBase():
         Y_cap = []
 
         for batch in loader:
+
+          # for key, value in batch.items():
+          #   print(f"Key: {key}, Value Type: {type(value)}")
+          #   if isinstance(value, torch.Tensor):
+          #       print(f"Shape of {key}: {value.shape}")
+          #   else:
+          #       print(f"Value for {key} is not a tensor.")
+
+
           with torch.no_grad():
             ## Transform batch before using in the model
             x, y_, y = self.get_processed_batch(batch)
+
+            # print("x shape: ", x[0].shape)
+            # print("y shape: ", y.shape)
+
             kwargs = self.get_kwargs(batch, epoch=0, sample_flag=1, description=desc)
 
         batch_size = y.shape[0]
@@ -800,7 +813,11 @@ class TrainerBase():
         for kwargs, kwargs_name in self.update_kwargs(kwargs): ## update kwargs like style
           with torch.no_grad():
             ## Forward pass
+            # y_cap is the generated keypoints with number of frames and dimentions
             y_cap, internal_losses, args = self.forward_pass(desc, x, y, **kwargs)
+
+            # Raw output e.g. (1, ?, 96)
+            # print("y_cap shape: ", y_cap.shape)
 
             ## update labels histogram ## only update when the speaker is sampled with it's style
             self._update_labels(desc=desc, style=int(batch['style'][0, 0].item()), kwargs_name=kwargs_name)
@@ -823,6 +840,9 @@ class TrainerBase():
             Tqdm.refresh()
 
             self.detach(x, y, y_cap, loss, internal_losses)
+
+            # Restructured output e.g. (num_frame, 2, 52)
+            print("y_cap shape: ", y_cap.shape)
 
           if Y_cap:
             intervals.append(batch['meta']['interval_id'][0])
@@ -856,6 +876,41 @@ class TrainerBase():
       metrics, metrics_split = {}, {}
 
     return losses[0], metrics, metrics_split
+  
+  # I wanted to use alternative spectrogram to generate new motion but failed, fuck
+  def sample_single(self, input_spectrogram, output_path):
+
+    # Convert to PyTorch tensor and add batch dimension
+    input_spectrogram = torch.tensor(input_spectrogram, dtype=torch.float32).unsqueeze(0)  # Shape: (1, 2077, 64)
+
+    # Set the model to evaluation mode
+    # self.model.eval()
+
+    # Initialize lists to store generated keypoints
+    y_cap_list = []
+
+    with torch.no_grad():
+      # Prepare input
+      x = [input_spectrogram]  # Input list with one modality
+      y = None  # No ground truth for single sample inference
+
+      # Generate keypoints from the model
+      y_cap, internal_losses, args = self.forward_pass("single", x, y)
+
+      # Process and save generated keypoints
+      y_cap = y_cap.to('cpu').squeeze(0)  # Remove batch dimension, move to CPU
+      y_cap_list.append(y_cap)
+
+      # Print the shape of generated keypoints
+      print("Generated keypoints shape: ", y_cap.shape)
+
+      # Save the generated keypoints to an HDF5 file
+      with h5py.File(output_path, 'w') as f:
+          f.create_dataset('generated_keypoints', data=y_cap.numpy())  # Convert tensor to numpy array and save
+
+    print(f"Generated keypoints saved to {output_path}")
+  
+    return y_cap
 
   def get_processed_batch(self, batch):
     batch = self.pre(batch)

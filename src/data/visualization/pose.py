@@ -87,6 +87,8 @@ def export_to_csv(file_path):
 def get_num_of_frame(file_path):
     with h5py.File(file_path, 'r') as f:
         pose_data = f['pose/normalize'][:]
+
+    print(pose_data.shape)
     return len(pose_data)
 
 def extract_coordinates(file_path, frame):
@@ -157,6 +159,19 @@ def plot_animation(file_path):
 
     plt.show()
 
+def read_log_mel_400(file_path):
+    with h5py.File(file_path, 'r') as h5_file:
+        # Access the dataset 'audio/log_mel_400'
+        log_mel_400_data = h5_file['audio/log_mel_400'][:]
+        
+        # Display information about the dataset
+        print(f"Shape: {log_mel_400_data.shape}")
+        print(f"Data Type: {log_mel_400_data.dtype}")
+        print("First 5 rows of data:")
+        print(log_mel_400_data[:5])
+        
+    return log_mel_400_data
+
 if __name__ == '__main__':
     # file_path = "D:\\UoA\\SOFTENG 700A\\mix-stage-master\\src\\data\\visualization\\features\\cmu0000033570.h5" # noah
     file_path = "D:\\UoA\SOFTENG 700A\\mix-stage-master\\src\\data\\visualization\\features\\100912.h5" # oliver
@@ -164,8 +179,10 @@ if __name__ == '__main__':
     path_to_dataset = "E:\\PATS\\pats\\data\\processed\\oliver"
 
     # show_file_content(file_path)
-    show_all_file_content(render_dir_path, path_to_dataset)
-    # inspect_h5(file_path)
+    # show_all_file_content(render_dir_path, path_to_dataset)
+    inspect_h5(file_path)
     # export_to_csv(file_path)
+    # get_num_of_frame(file_path)
     # plot_keypoints(file_path)
     # plot_animation(file_path)
+    # read_log_mel_400(file_path)
