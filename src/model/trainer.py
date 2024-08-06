@@ -877,40 +877,113 @@ class TrainerBase():
 
     return losses[0], metrics, metrics_split
   
-  # I wanted to use alternative spectrogram to generate new motion but failed, fuck
-  def sample_single(self, input_spectrogram, output_path):
+  def sample_single(self, exp_num):
+    ## Create Output Directory
+    self.dir_name = self.book.name.dir(self.args.save_dir)
 
-    # Convert to PyTorch tensor and add batch dimension
-    input_spectrogram = torch.tensor(input_spectrogram, dtype=torch.float32).unsqueeze(0)  # Shape: (1, 2077, 64)
+    ## Load best Model
+    self.book._load_model(self.model)
 
-    # Set the model to evaluation mode
-    # self.model.eval()
+    test_loss = self.sample_loop_single(self.data_test.dataset.datasets, 'test')
 
-    # Initialize lists to store generated keypoints
-    y_cap_list = []
+  def sample_loop_single(self, data, desc):
+    self.metrics_reset()
+    self.running_loss_init()
+    self.model.eval()
 
-    with torch.no_grad():
-      # Prepare input
-      x = [input_spectrogram]  # Input list with one modality
-      y = None  # No ground truth for single sample inference
+    intervals = []
+    start = []
+    y_outs = []
+    y_animates = []
+    filenames = []
+    keys = []
+    collate_fn = None
 
-      # Generate keypoints from the model
-      y_cap, internal_losses, args = self.forward_pass("single", x, y)
+    len_data = len(data)
+    bar_format = '{percentage:3.0f}%|' + '|' + ':{desc}'
+    bar_format = '{percentage:3.0f}%[{elapsed}<{remaining}]' + ':{desc}'
+    Tqdm = tqdm(data, desc=self.tqdm_desc(desc), leave=False, ncols=20, bar_format=bar_format)
+    for count, loader in enumerate(Tqdm):
+      ### load ground truth
+      Y = self.get_gt(loader.path2h5)
 
-      # Process and save generated keypoints
-      y_cap = y_cap.to('cpu').squeeze(0)  # Remove batch dimension, move to CPU
-      y_cap_list.append(y_cap)
+      if len(loader) > 0:
+        loader = DataLoader(loader, len(loader), shuffle=False, collate_fn=collate_fn)
+        Y_cap = []
 
-      # Print the shape of generated keypoints
-      print("Generated keypoints shape: ", y_cap.shape)
+        for batch in loader:
+          with torch.no_grad():
+            ## Transform batch before using in the model
+            x, y_, y = self.get_processed_batch(batch)
 
-      # Save the generated keypoints to an HDF5 file
-      with h5py.File(output_path, 'w') as f:
-          f.create_dataset('generated_keypoints', data=y_cap.numpy())  # Convert tensor to numpy array and save
+            kwargs = self.get_kwargs(batch, epoch=0, sample_flag=1, description=desc)
 
-    print(f"Generated keypoints saved to {output_path}")
-  
-    return y_cap
+        batch_size = y.shape[0]
+        X_ = [x_.view(1, -1, x_.shape[-1]) for x_ in x[:len(self.input_modalities)]]
+        for x_ in x[len(self.input_modalities):]: ## hardcoded for auxillary labels
+          X_.append(x_.view(1, -1))
+
+        y = y.view(1, -1, y.shape[-1])
+        x = X_
+
+        for kwargs, kwargs_name in self.update_kwargs(kwargs): ## update kwargs like style
+          with torch.no_grad():
+            ## Forward pass
+            # y_cap is the generated keypoints with number of frames and dimentions
+            y_cap, internal_losses, args = self.forward_pass(desc, x, y, **kwargs)
+
+            # ## update labels histogram ## only update when the speaker is sampled with it's style
+            # self._update_labels(desc=desc, style=int(batch['style'][0, 0].item()), kwargs_name=kwargs_name)
+
+            ## get confidence loss
+            confidence_loss = 0
+
+            loss = 0
+
+            ## Calculates PCK and reinserts data removed before training
+            y_cap = y_cap.to('cpu')
+            with torch.no_grad():
+              y_cap = y_cap.view(batch_size, -1, y_cap.shape[-1])
+              y_cap = self.calculate_metrics(y_cap, y_, kwargs_name, **kwargs)
+            Y_cap.append(y_cap)
+
+            ## update tqdm
+            losses = [l/c for l,c in zip(self.running_loss, self.running_count)] + [confidence_loss]
+            Tqdm.set_description(self.tqdm_desc(desc, losses))
+            Tqdm.refresh()
+
+            self.detach(x, y, y_cap, loss, internal_losses)
+
+            # Restructured output e.g. (num_frame, 2, 52)
+            print("y_cap shape: ", y_cap.shape)
+
+          if Y_cap:
+            intervals.append(batch['meta']['interval_id'][0])
+            start.append(torch.Tensor([0]).to(torch.float))
+            y_outs.append(torch.cat(Y_cap, dim=0))
+            y_animates.append([torch.cat(Y_cap, dim=0), Y])
+
+            dir_name = 'keypoints' if kwargs_name is None else 'keypoints_{}'.format(kwargs_name)
+            filenames.append((Path(self.dir_name)/dir_name/'{}/{}/{}.h5'.format(desc,
+                                                                                self.data.getSpeaker(intervals[-1]),
+                                                                                intervals[-1])).as_posix())
+            keys.append(self.output_modality)
+            Y_cap = []
+            #keys += [self.output_modality] * len(intervals)
+
+      ## Save Keypoints
+      if (count + 1) % 100 == 0 or count == len_data - 1: ## save files every 100 batches to prevent memory errors
+        parallel(self.data.modality_classes[self.output_modality].append, # fn
+                 -1, # n_jobs
+                 filenames, keys, y_outs) # fn_args
+        intervals = []
+        start = []
+        y_outs = []
+        y_animates = []
+        filenames = []
+        keys = []
+
+    return losses[0]
 
   def get_processed_batch(self, batch):
     batch = self.pre(batch)
