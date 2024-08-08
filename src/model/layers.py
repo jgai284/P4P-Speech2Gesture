@@ -202,7 +202,8 @@ class AudioEncoder(nn.Module):
     x = torch.nn.functional.interpolate(x, size=(time_steps, 1), mode='bilinear')
     x = x.squeeze(dim=-1)
     return x
-  
+
+# Adds a skip connection to improve gradient flow and feature learning
 class ResidualBlock(nn.Module):
   def __init__(self, in_channels):
     super(ResidualBlock, self).__init__()
@@ -218,6 +219,19 @@ class ResidualBlock(nn.Module):
     out += identity  # Add the residual connection
     return out
 
+# Extracts more detailed style information from the audio features
+class StyleEncoder(nn.Module):
+  def __init__(self, in_channels, out_channels):
+    super(StyleEncoder, self).__init__()
+    self.conv = nn.Sequential(
+        nn.Conv1d(in_channels, out_channels, kernel_size=3, padding=1),
+        nn.ReLU(),
+        nn.Conv1d(out_channels, out_channels, kernel_size=3, padding=1),
+        nn.ReLU(),
+    )
+
+  def forward(self, x):
+    return self.conv(x)
 
 
 
