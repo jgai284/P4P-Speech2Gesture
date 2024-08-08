@@ -49,7 +49,18 @@ class Speech2Gesture_G(nn.Module):
     x = self.logits(x)
 
     internal_losses = []
+
+    # swaps the last two dimensions of the tensor x
+    # if x = (N, T, C), the result would be x = (N, C, T)
     return x.transpose(-1, -2), internal_losses
+
+# Input: (N, time, frequency) → After unsqueeze, becomes (N, 1, time, frequency).
+# After AudioEncoder: (N, 256, time, 1).
+# After UNet1D: (N, in_channels, time).
+# After decoder: (N, in_channels, time).
+# After logits: (N, out_feats, time).
+# Output: (N, time, pose_feats) after transposing.
+
 
 
 # Adversarial discriminator D: 
