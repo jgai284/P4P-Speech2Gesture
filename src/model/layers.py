@@ -202,6 +202,29 @@ class AudioEncoder(nn.Module):
     x = torch.nn.functional.interpolate(x, size=(time_steps, 1), mode='bilinear')
     x = x.squeeze(dim=-1)
     return x
+  
+class ResidualBlock(nn.Module):
+  def __init__(self, in_channels):
+    super(ResidualBlock, self).__init__()
+    self.conv1 = nn.Conv1d(in_channels, in_channels, kernel_size=3, padding=1)
+    self.relu = nn.ReLU()
+    self.conv2 = nn.Conv1d(in_channels, in_channels, kernel_size=3, padding=1)
+
+  def forward(self, x):
+    identity = x
+    out = self.conv1(x)
+    out = self.relu(out)
+    out = self.conv2(out)
+    out += identity  # Add the residual connection
+    return out
+
+
+
+
+
+
+
+##################################### Mix-Stage #####################################
 
 class PoseEncoder(nn.Module):
   '''

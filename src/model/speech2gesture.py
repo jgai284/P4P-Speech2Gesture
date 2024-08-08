@@ -33,6 +33,7 @@ class Speech2Gesture_G(nn.Module):
     # Layers
     self.audio_encoder = AudioEncoder(output_feats = time_steps, p=p)
     self.unet = UNet1D(input_channels = in_channels, output_channels = in_channels, p=p)
+    self.residual_block = ResidualBlock(in_channels)
     self.decoder = nn.Sequential(*nn.ModuleList([ConvNormRelu(in_channels, in_channels,
                                                               type='1d', leaky=True, downsample=False,
                                                               p=p)
@@ -45,6 +46,7 @@ class Speech2Gesture_G(nn.Module):
       x = x.unsqueeze(dim=1)
     x = self.audio_encoder(x, time_steps)
     x = self.unet(x)
+    x = self.residual_block(x)
     x = self.decoder(x)
     x = self.logits(x)
 
