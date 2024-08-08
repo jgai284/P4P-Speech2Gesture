@@ -219,6 +219,40 @@ class ResidualBlock(nn.Module):
     out += identity  # Add the residual connection
     return out
 
+class ResidualAttentionBlock(nn.Module):
+    def __init__(self, in_channels, out_channels):
+        super(ResidualAttentionBlock, self).__init__()
+        self.conv1 = nn.Conv1d(in_channels, out_channels, kernel_size=3, padding=1)
+        self.bn1 = nn.BatchNorm1d(out_channels)
+        self.relu = nn.ReLU()
+        self.conv2 = nn.Conv1d(out_channels, out_channels, kernel_size=3, padding=1)
+        self.bn2 = nn.BatchNorm1d(out_channels)
+        
+        # Attention layer
+        self.attention = nn.Sequential(
+            nn.Conv1d(out_channels, out_channels, kernel_size=1),
+            nn.Softmax(dim=-1)
+        )
+        
+        self.residual_conv = nn.Conv1d(in_channels, out_channels, kernel_size=1)
+
+    def forward(self, x):
+        residual = x
+        x = self.conv1(x)
+        x = self.bn1(x)
+        x = self.relu(x)
+        x = self.conv2(x)
+        x = self.bn2(x)
+        
+        # Apply attention mechanism
+        attention_weights = self.attention(x)
+        x = x * attention_weights
+        
+        # Adjust dimensions to match the residual connection
+        residual = self.residual_conv(residual)
+        x = x + residual
+        return x
+
 # Extracts more detailed style information from the audio features
 class StyleEncoder(nn.Module):
   def __init__(self, in_channels, out_channels):
