@@ -237,15 +237,34 @@ class ResidualAttentionBlock(nn.Module):
         x = x + residual
         return x
 
-class GatedBlock(nn.Module):
+class AttentionBlock(nn.Module):
     def __init__(self, in_channels):
-        super(GatedBlock, self).__init__()
+        super(AttentionBlock, self).__init__()
+        self.query_conv = nn.Conv1d(in_channels, in_channels, kernel_size=1)
+        self.key_conv = nn.Conv1d(in_channels, in_channels, kernel_size=1)
+        self.value_conv = nn.Conv1d(in_channels, in_channels, kernel_size=1)
+        self.softmax = nn.Softmax(dim=-1)
+
+    def forward(self, x):
+        query = self.query_conv(x)
+        key = self.key_conv(x)
+        value = self.value_conv(x)
+        attention_weights = self.softmax(torch.bmm(query.permute(0, 2, 1), key))
+        attended_features = torch.bmm(attention_weights, value.permute(0, 2, 1))
+        return attended_features.permute(0, 2, 1)
+
+class ResidualGatedBlock(nn.Module):
+    def __init__(self, in_channels):
+        super(ResidualGatedBlock, self).__init__()
         self.conv = nn.Conv1d(in_channels, in_channels, kernel_size=3, padding=1)
         self.sigmoid = nn.Sigmoid()
 
     def forward(self, x):
-        gate = self.sigmoid(self.conv(x))
-        return x * gate
+        residual = x
+        x = self.conv(x)
+        gate = self.sigmoid(x)
+        x = residual * gate
+        return x
 
 class StyleEncoder(nn.Module):
     def __init__(self, in_channels, out_channels):
@@ -268,18 +287,16 @@ class StyleEncoder(nn.Module):
             padding=1, 
             leaky=False
         )
-
-        self.gated_block = GatedBlock(out_channels)
+        self.attention_block = AttentionBlock(out_channels)
+        self.residual_gated_block = ResidualGatedBlock(out_channels)
 
     def forward(self, x):
-        # Apply convolutional layers
         x = self.conv1(x)
         x = self.conv2(x)
-        
-        # Apply gated mechanism
-        x = self.gated_block(x)
-        
+        x = self.attention_block(x)
+        x = self.residual_gated_block(x)
         return x
+
 
 
 
