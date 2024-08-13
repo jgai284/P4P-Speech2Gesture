@@ -203,22 +203,6 @@ class AudioEncoder(nn.Module):
     x = x.squeeze(dim=-1)
     return x
 
-# Adds a skip connection to improve gradient flow and feature learning
-class ResidualBlock(nn.Module):
-  def __init__(self, in_channels):
-    super(ResidualBlock, self).__init__()
-    self.conv1 = nn.Conv1d(in_channels, in_channels, kernel_size=3, padding=1)
-    self.relu = nn.ReLU()
-    self.conv2 = nn.Conv1d(in_channels, in_channels, kernel_size=3, padding=1)
-
-  def forward(self, x):
-    identity = x
-    out = self.conv1(x)
-    out = self.relu(out)
-    out = self.conv2(out)
-    out += identity  # Add the residual connection
-    return out
-
 class ResidualAttentionBlock(nn.Module):
     def __init__(self, in_channels, out_channels):
         super(ResidualAttentionBlock, self).__init__()
@@ -253,19 +237,51 @@ class ResidualAttentionBlock(nn.Module):
         x = x + residual
         return x
 
-# Extracts more detailed style information from the audio features
-class StyleEncoder(nn.Module):
-  def __init__(self, in_channels, out_channels):
-    super(StyleEncoder, self).__init__()
-    self.conv = nn.Sequential(
-        nn.Conv1d(in_channels, out_channels, kernel_size=3, padding=1),
-        nn.ReLU(),
-        nn.Conv1d(out_channels, out_channels, kernel_size=3, padding=1),
-        nn.ReLU(),
-    )
+class GatedBlock(nn.Module):
+    def __init__(self, in_channels):
+        super(GatedBlock, self).__init__()
+        self.conv = nn.Conv1d(in_channels, in_channels, kernel_size=3, padding=1)
+        self.sigmoid = nn.Sigmoid()
 
-  def forward(self, x):
-    return self.conv(x)
+    def forward(self, x):
+        gate = self.sigmoid(self.conv(x))
+        return x * gate
+
+class StyleEncoder(nn.Module):
+    def __init__(self, in_channels, out_channels):
+        super(StyleEncoder, self).__init__()
+        self.conv1 = ConvNormRelu(
+            in_channels=in_channels, 
+            out_channels=out_channels, 
+            type='1d', 
+            kernel_size=3, 
+            stride=1, 
+            padding=1, 
+            leaky=False
+        )
+        self.conv2 = ConvNormRelu(
+            in_channels=out_channels, 
+            out_channels=out_channels, 
+            type='1d', 
+            kernel_size=3, 
+            stride=1, 
+            padding=1, 
+            leaky=False
+        )
+
+        self.gated_block = GatedBlock(out_channels)
+
+    def forward(self, x):
+        # Apply convolutional layers
+        x = self.conv1(x)
+        x = self.conv2(x)
+        
+        # Apply gated mechanism
+        x = self.gated_block(x)
+        
+        return x
+
+
 
 
 
