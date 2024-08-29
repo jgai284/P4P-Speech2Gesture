@@ -193,6 +193,8 @@ class AudioEncoder(nn.Module):
     # self.upconv = nn.Upsample(size=(output_feats, 1), mode='bilinear')
     ## TODO maybe the size should be (output_feats,1) instead, as we want to upsample along the time dimension
 
+    self.embedding_layer = nn.Linear(output_feats, 128)
+
   def forward(self, x, time_steps=None):
     if time_steps is None:
       time_steps = x.shape[-2] ## assume it is same as the input time steps

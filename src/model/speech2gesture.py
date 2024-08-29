@@ -41,6 +41,8 @@ class Speech2Gesture_G(nn.Module):
                                   for i in range(4)]))
     self.logits = nn.Conv1d(in_channels, out_feats, kernel_size=1, stride=1)
 
+    self.embedding_layer = nn.Linear(6144, 128)
+
   # Define how the input audio features are processed through the network to produce the output gesture feature
   def forward(self, x, y, time_steps=None, **kwargs):
     if x.dim() == 3:
@@ -54,9 +56,21 @@ class Speech2Gesture_G(nn.Module):
 
     internal_losses = []
 
+    gesture_features = x.transpose(-1, -2)
+    gesture_embeddings = self.get_embeddings(gesture_features)
+
     # swaps the last two dimensions of the tensor x
     # if x = (N, T, C), the result would be x = (N, C, T)
-    return x.transpose(-1, -2), internal_losses
+    # return x.transpose(-1, -2), internal_losses
+    return gesture_features, gesture_embeddings, internal_losses
+  
+  def get_embeddings(self, gesture_features):
+    # Flatten the features to prepare for fully connected layer
+    batch_size, seq_length, num_features = gesture_features.size()
+    flattened = gesture_features.reshape(batch_size, -1)
+    embeddings = self.embedding_layer(flattened)
+    embeddings = nn.functional.normalize(embeddings, p=2, dim=1)  # Normalize the embeddings
+    return embeddings
 
 # Input: (N, time, frequency) → After unsqueeze, becomes (N, 1, time, frequency).
 # After AudioEncoder: (N, 256, time, 1).

@@ -1254,17 +1254,34 @@ class TrainerGAN(TrainerBase):
     return y_cap, internal_losses, args
 
   def calculate_loss(self, x, y, y_cap, internal_losses):
-    loss = 0
+    # Determine if x is a list or tensor
+    if isinstance(x, list):
+      if len(x) > 0 and isinstance(x[0], torch.Tensor):
+          device = x[0].device
+      else:
+          device = torch.device('cpu')
+    elif isinstance(x, torch.Tensor):
+      device = x.device
+    else:
+      raise ValueError("x must be a list or a tensor")
+    loss = torch.tensor(0.0, device=device)  # Initialize loss as a tensor with the correct device
     for i, i_loss in enumerate(internal_losses):
+      if not isinstance(i_loss, torch.Tensor):
+        i_loss = torch.tensor(i_loss, device=device)  # Convert scalar to tensor
       if i < 2:
-        if self.model.G_flag: ## TODO
-          self.running_loss[i] += i_loss.item() * y_cap.shape[0]
+        if self.model.G_flag:
+          if isinstance(self.running_loss[i], (int, float)):
+            self.running_loss[i] += i_loss.sum().item() * y_cap.shape[0]
+          else:
+            self.running_loss[i] += i_loss.sum() * y_cap.shape[0]
           self.running_count[i] += y_cap.shape[0]
         else:
-          self.running_loss[i+2] += i_loss.item() * y_cap.shape[0]
+          if isinstance(self.running_loss[i+2], (int, float)):
+            self.running_loss[i+2] += i_loss.sum().item() * y_cap.shape[0]
+          else:
+            self.running_loss[i+2] += i_loss.sum() * y_cap.shape[0]
           self.running_count[i+2] += y_cap.shape[0]
-
-      loss += i_loss
+      loss += i_loss.sum()  # Sum the tensor to match the expected shape
     return loss
 
   def get_norm(self, model):

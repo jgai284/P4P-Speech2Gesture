@@ -167,6 +167,7 @@ class GAN(nn.Module):
       internal_losses += partial_i_loss
       self.G_flag = True
 
+    args = {}
     args.update(dict(W=W))
     return fake_pose, internal_losses, args
   
