@@ -602,86 +602,86 @@ class TrainerBase():
     self.running_loss_init()
 
     if desc == 'train':
-      self.model.train(True)
+        self.model.train(True)
     else:
-      self.model.eval()
+        self.model.eval()
 
     bar_format = '{percentage:3.0f}%[{elapsed}<{remaining}]' + ':{desc}'
     bar_format = '{desc}:' +'{n_fmt}/{total_fmt}[{elapsed}<{remaining}]'
     Tqdm = tqdm(data, desc=self.tqdm_desc(desc), leave=False, ncols=20, bar_format=bar_format)
     for count, batch in enumerate(Tqdm):
-      self.zero_grad()
+        self.zero_grad()
 
-      ## update weight counter
-      self.weight_counter.update(batch['idx'].numpy())
+        ## update weight counter
+        self.weight_counter.update(batch['idx'].numpy())
 
-      ## Transform batch before using in the model
-      x, y_, y = self.get_processed_batch(batch)
+        ## Transform batch before using in the model
+        x, y_, y = self.get_processed_batch(batch)
 
-      ## get kwargs like style
-      kwargs = self.get_kwargs(batch, epoch=epoch, sample_flag=0, description=desc)
+        ## get kwargs like style
+        kwargs = self.get_kwargs(batch, epoch=epoch, sample_flag=0, description=desc)
 
-      ## add noise to output to improve robustness of the model
-      noise = torch.randn_like(y) * self.args.noise if self.args.noise > 0 else 0
+        ## add noise to output to improve robustness of the model
+        noise = torch.randn_like(y) * self.args.noise if self.args.noise > 0 else 0
 
-      y_cap, internal_losses, args = self.forward_pass(desc, x, y+noise, **kwargs)
-      args = args[0] if len(args)>0 else {} ## dictionary of args returned by model
+        # Forward pass
+        gesture_features, gesture_embeddings, internal_losses = self.forward_pass(desc, x, y+noise, **kwargs)
 
-      ## check if there are weights in *args
-      if args.get('W') is not None and desc=='train' and self.args.weighted > 0:
-        W = args['W']
-        W_min = 0.1
-        self.data_train.sampler.weights[batch['idx']] = torch.max(torch.zeros(1)[0].double() + W_min, W.cpu()) ## clip the weights to positive values
+        # Extract features for contrastive loss
+        # For simplicity, use gesture_features as both anchor and positive
+        anchor_features = gesture_features
+        positive_features = gesture_features
 
-      ## Get mask to calculate the loss function
-      src_mask_loss = args.get('src_mask_loss')
-      src_mask_loss = src_mask_loss.unsqueeze(-1) if src_mask_loss is not None else torch.ones_like(y[:, :, 0:1])
+        # Contrastive loss
+        contrastive_loss = self.model.compute_loss(anchor_features, positive_features)
 
-      ## get confidence values and
-      ## calculate confidence loss
-      confidence_loss = self.get_confidence_loss(batch, y, y_cap)
+        # Compute main loss (modify as necessary)
+        src_mask_loss = kwargs.get('src_mask_loss')
+        src_mask_loss = src_mask_loss.unsqueeze(-1) if src_mask_loss is not None else torch.ones_like(y[:, :, 0:1])
+        loss = self.calculate_loss(x, (y+noise)*src_mask_loss, gesture_features*src_mask_loss, internal_losses)
 
-      loss = self.calculate_loss(x, (y+noise)*src_mask_loss, y_cap*src_mask_loss, internal_losses)
+        # Total loss
+        total_loss = loss + contrastive_loss
 
-      ## update tqdm
-      losses = [l/c for l,c in zip(self.running_loss, self.running_count)] + [confidence_loss]
-      Tqdm.set_description(self.tqdm_desc(desc, losses))
-      Tqdm.refresh()
+        ## update tqdm
+        losses = [l/c for l,c in zip(self.running_loss, self.running_count)] + [contrastive_loss]
+        Tqdm.set_description(self.tqdm_desc(desc, losses))
+        Tqdm.refresh()
 
-      if np.isnan(losses[0]):
-        pdb.set_trace()
-      if desc == 'train':
-        self.optimize(loss + confidence_loss)
+        if np.isnan(losses[0]):
+            pdb.set_trace()
+        if desc == 'train':
+            self.optimize(total_loss)
 
-      ## Detach Variables to avoid memory leaks
-      #x = x.detach()
-      #y = y.detach()
-      #loss = loss.detach()
-      #y_cap = y_cap.detach()
+        ## Detach Variables to avoid memory leaks
+        # x = x.detach()
+        # y = y.detach()
+        # loss = loss.detach()
+        # y_cap = y_cap.detach()
 
-      ## Evalutation
-      y_cap = y_cap.to('cpu')
-      src_mask_loss = src_mask_loss.to('cpu')
-      with torch.no_grad():
-        self.calculate_metrics(y_cap*src_mask_loss, y_*src_mask_loss, 'same', **kwargs)
-      self.detach(x, y, loss, y_cap, internal_losses)
+        ## Evaluation
+        gesture_features = gesture_features.to('cpu')
+        src_mask_loss = src_mask_loss.to('cpu')
+        with torch.no_grad():
+            self.calculate_metrics(gesture_features*src_mask_loss, y_*src_mask_loss, 'same', **kwargs)
+        self.detach(x, y, total_loss, gesture_features, internal_losses)
 
-      if count>=self.args.debug and self.args.debug: ## debugging by overfitting
-        break
+        if count >= self.args.debug and self.args.debug: ## debugging by overfitting
+            break
 
-      ## if self.args.num_iters > 0, break training
-      if count >= num_iters and num_iters > 0 and desc != 'train':
-        Tqdm.close()
-        break
+        ## if self.args.num_iters > 0, break training
+        if count >= num_iters and num_iters > 0 and desc != 'train':
+            Tqdm.close()
+            break
 
     metrics = {}
     if self.metrics:
-      metrics, metrics_split = self.get_metrics(desc)
+        metrics, metrics_split = self.get_metrics(desc)
     else:
-      metrics, metrics_split = {}, {}
+        metrics, metrics_split = {}, {}
 
     return losses[0], metrics, metrics_split
-    #return sum(losses), metrics
+
 
   def weight_estimate_loop(self, data, desc, epoch=0, num_iters=0):
     self.model.eval()
@@ -1256,33 +1256,47 @@ class TrainerGAN(TrainerBase):
   def calculate_loss(self, x, y, y_cap, internal_losses):
     # Determine if x is a list or tensor
     if isinstance(x, list):
-      if len(x) > 0 and isinstance(x[0], torch.Tensor):
-          device = x[0].device
-      else:
-          device = torch.device('cpu')
-    elif isinstance(x, torch.Tensor):
-      device = x.device
-    else:
-      raise ValueError("x must be a list or a tensor")
-    loss = torch.tensor(0.0, device=device)  # Initialize loss as a tensor with the correct device
-    for i, i_loss in enumerate(internal_losses):
-      if not isinstance(i_loss, torch.Tensor):
-        i_loss = torch.tensor(i_loss, device=device)  # Convert scalar to tensor
-      if i < 2:
-        if self.model.G_flag:
-          if isinstance(self.running_loss[i], (int, float)):
-            self.running_loss[i] += i_loss.sum().item() * y_cap.shape[0]
-          else:
-            self.running_loss[i] += i_loss.sum() * y_cap.shape[0]
-          self.running_count[i] += y_cap.shape[0]
+        if len(x) > 0 and isinstance(x[0], torch.Tensor):
+            device = x[0].device
         else:
-          if isinstance(self.running_loss[i+2], (int, float)):
-            self.running_loss[i+2] += i_loss.sum().item() * y_cap.shape[0]
-          else:
-            self.running_loss[i+2] += i_loss.sum() * y_cap.shape[0]
-          self.running_count[i+2] += y_cap.shape[0]
-      loss += i_loss.sum()  # Sum the tensor to match the expected shape
+            device = torch.device('cpu')
+    elif isinstance(x, torch.Tensor):
+        device = x.device
+    else:
+        raise ValueError("x must be a list or a tensor")
+    
+    loss = torch.tensor(0.0, device=device)  # Initialize loss as a tensor with the correct device
+    
+    for i, i_loss in enumerate(internal_losses):
+        # Check if i_loss is a dictionary
+        if isinstance(i_loss, dict):
+            # Handle dictionary: extract values or handle specific cases
+            for key, value in i_loss.items():
+                if isinstance(value, torch.Tensor):
+                    i_loss = value
+                else:
+                    i_loss = torch.tensor(value, device=device)  # Convert non-tensor values to tensor
+                break  # Assuming you want the first value from the dictionary
+        elif not isinstance(i_loss, torch.Tensor):
+            i_loss = torch.tensor(i_loss, device=device)  # Convert scalar to tensor
+        
+        if i < 2:
+            if self.model.G_flag:
+                if isinstance(self.running_loss[i], (int, float)):
+                    self.running_loss[i] += i_loss.sum().item() * y_cap.shape[0]
+                else:
+                    self.running_loss[i] += i_loss.sum() * y_cap.shape[0]
+                self.running_count[i] += y_cap.shape[0]
+            else:
+                if isinstance(self.running_loss[i+2], (int, float)):
+                    self.running_loss[i+2] += i_loss.sum().item() * y_cap.shape[0]
+                else:
+                    self.running_loss[i+2] += i_loss.sum() * y_cap.shape[0]
+                self.running_count[i+2] += y_cap.shape[0]
+        loss += i_loss.sum()  # Sum the tensor to match the expected shape
+    
     return loss
+
 
   def get_norm(self, model):
     params = []

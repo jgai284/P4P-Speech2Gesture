@@ -71,6 +71,28 @@ class Speech2Gesture_G(nn.Module):
     embeddings = self.embedding_layer(flattened)
     embeddings = nn.functional.normalize(embeddings, p=2, dim=1)  # Normalize the embeddings
     return embeddings
+  
+  def contrastive_loss(self, anchor, positive, negative, margin=1.0):
+        pos_dist = nn.functional.pairwise_distance(anchor, positive, p=2)
+        neg_dist = nn.functional.pairwise_distance(anchor, negative, p=2)
+        loss = torch.mean(F.relu(pos_dist - neg_dist + margin))
+        return loss
+
+  def compute_loss(self, speech_features, gesture_features):
+      # Assuming speech_features and gesture_features are tensors of the same shape
+      # Extract embeddings
+      speech_embeddings = self.get_embeddings(speech_features)
+      gesture_embeddings = self.get_embeddings(gesture_features)
+      
+      # Create positive and negative pairs
+      # Example: for simplicity, using the same batch as positive pairs
+      anchor = speech_embeddings
+      positive = gesture_embeddings
+      negative = gesture_embeddings  # This should ideally be from a different batch or source
+
+      # Compute contrastive loss
+      loss = self.contrastive_loss(anchor, positive, negative)
+      return loss
 
 # Input: (N, time, frequency) → After unsqueeze, becomes (N, 1, time, frequency).
 # After AudioEncoder: (N, 256, time, 1).

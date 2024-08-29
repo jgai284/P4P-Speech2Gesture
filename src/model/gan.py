@@ -84,7 +84,24 @@ class GAN(nn.Module):
 
   def update_D_prob(self, W):
     pass
+
+  def contrastive_loss(self, anchor, positive, negative, margin=1.0):
+    pos_dist = nn.functional.pairwise_distance(anchor, positive, p=2)
+    neg_dist = nn.functional.pairwise_distance(anchor, negative, p=2)
+    loss = torch.mean(F.relu(pos_dist - neg_dist + margin))
+    return loss
+
+  def compute_loss(self, speech_features, gesture_features):
+    # Assuming speech_features and gesture_features are tensors of the same shape
+    speech_embeddings = self.G.get_embeddings(speech_features)
+    gesture_embeddings = self.G.get_embeddings(gesture_features)
     
+    anchor = speech_embeddings
+    positive = gesture_embeddings
+    negative = gesture_embeddings  # Modify this to use a different source for negative pairs
+    
+    return self.contrastive_loss(anchor, positive, negative)
+  
   # This forward method orchestrates (organizes) the training process of the GAN model, encapsulating the training loop, loss calculations, and integration of the discriminator and generator.
   def forward(self, x_audio, y_pose, **kwargs):
     internal_losses = []
