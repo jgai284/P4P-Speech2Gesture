@@ -842,7 +842,7 @@ class TrainerBase():
             self.detach(x, y, y_cap, loss, internal_losses)
 
             # Restructured output e.g. (num_frame, 2, 52)
-            print("y_cap shape: ", y_cap.shape)
+            # print("y_cap shape: ", y_cap.shape)
 
           if Y_cap:
             intervals.append(batch['meta']['interval_id'][0])
@@ -955,7 +955,7 @@ class TrainerBase():
             self.detach(x, y, y_cap, loss, internal_losses)
 
             # Restructured output e.g. (num_frame, 2, 52)
-            print("y_cap shape: ", y_cap.shape)
+            # print("y_cap shape: ", y_cap.shape)
 
           if Y_cap:
             intervals.append(batch['meta']['interval_id'][0])
